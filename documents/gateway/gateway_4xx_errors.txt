@@ -1,0 +1,144 @@
+401 Not Authenticated
+401 errors are due to failure to authenticate the ticket OR the app credentials.
+Check with identity support
+For many user ticket based 401 errors best to check in the identity/ticket support slack channel - #iip-sup-ticket
+1. First try the incident assitant tool (as they recommend in that support channel)
+* In any public slack channel: /ia iip <transactionId>
+* e.g. /ia iip 2e049359-436d-4579-837b-134fcbc4607d
+* ... be patient takes a bit - but provides some good info - click the link in the response
+Authorization data required
+GW log fields
+1. gw_gen=T
+2. message= 'Authorization data required'
+3. reason= 'authHeader'
+4. value= 'emptyAuthHeader' OR 'checkAuthHeader'
+What to check
+1. Client did not provide an authorization header per the documentation
+2. Client is using an authType that is not supported by the service.
+    1. For this one you need to see which authType is configured on the route (in service yaml) the client is calling. If it's missing advise them to add the correct authType.
+Invalid Application Credentials
+GW log fields
+1. message= 'Invalid Application Credentials'
+2. reason= 'appCredentials'
+3. phrase= 'Code:ApplicationAuthenticationFailed'
+4. value= 'checkCredentials' OR 'emptyAssetId'
+What to check
+1. Client App is using the wrong app secret, i.e. using prod secret in preprod environment, or secret from another app.
+2. Invalid format of Authorization header in request - especially from curl (check for special characters, wrong quote format)
+Invalid OAuth2 Token
+GW log fields
+1. message= 'Invalid OAuth2 Token'
+2. reason= 'invalidOAuth2Token'
+3. value= 'tokenExpired' OR 'invalidToken'
+What to check
+1. Client App is using an invalid token i.e. using prod secret in preprod environment, or secret from another app.
+2. Client App is using an expired token - check client side code and timing of token refresh
+3. Invalid format of Authorization header in request - especially from curl (check for special characters, wrong quote format)
+Unknown or null user ticket
+GW log fields
+1. message= 'Unknown or null user ticket'
+2. gw_gen=T
+3. phrase= 'Code:UserAuthenticationFailed' OR 'Invalid or unknown user ticket'
+4. reason= 'userTicket'
+5. value= 'checkTicket'
+Invalid user ticket
+GW log fields
+1. gw_gen=T
+2. message= 'Invalid user ticket'
+3. phrase= 'Code:UserAuthenticationFailed' OR 'Invalid user ticket'
+4. reason= 'userTicket' OR 'invalidTicket'
+5. value= 'checkUserTicket'
+What to check
+1. Check with identity support
+2. Client App IAM ticket is expired
+3. The ticket is for preprod, but the client is calling a prod endpoint
+Ticket Expired
+GW log fields
+1. gw_gen=T
+2. message= 'Ticket Expired'
+3. phrase= 'Code:ApplicationAuthenticationFailed'
+4. reason= 'offlineTicket'
+5. value= 'checkTicket'
+What to check
+1. Check with identity support
+2. Client App IAM ticket is expired
+3. The ticket is for preprod, but the client is calling a prod endpoint
+Authentication failed at backend service
+GW log fields
+1. gw_gen=F
+2. message= 'Invalid user ticket' OR not in logs (no message=)
+What to check
+1. Check with identity support
+2. Check with Backend Service
+403 Not Authorized
+App not onboarded
+GW log fields
+1. app_onboarded=false
+other fields may or may not have:
+1. message='App not onboarded'
+2. reason='unauthorizedApp'
+3. value='onboardApp'
+What to check
+1. Make sure app is onboarded (conneccted) to the service
+2. If the app is onboarded according to Portal UI, you may need to refresh the app data
+    * Ask GW support to refresh the app data
+App not authorized due to grant
+GW log fields
+1. message='App not authorized due to grant'
+2. reason='unauthorizedApp'
+3. value=[the Grant Name]
+4. userAAL=[AAL value] - not always present
+5. req=[request path]
+What to check
+1. Check Grant in service (using value to get name)
+    1. If there is an AAL rule
+        1. Check field userAAL (ticket AAL value)
+            1. If there is no userAAL then make sure filter in service yaml has ticket: specified
+            2. Make sure AAL value for ticket satisfies the rule
+    2. Verify request field req=[request path] satisfies the grant rule
+        1. the request value needs to match exactly the rule specification
+2. See more Grant information in Protecting Services Grants and AAL
+Invalid user ticket
+GW log fields
+1. message='Invalid user ticket'
+2. reason= 'userTicket'
+3. value='checkUserTicket'
+The access token does not have sufficient scopes
+GW log fields
+1. message='The access token does not have sufficient scopes'
+    * In some cases message='Value obtained from memcached'
+2. reason='oAuth2Scopes'
+3. value='Missing scope Ids. List of scopes evaluated: [list of scope Ids]
+What to check
+1. app_onboarded=false - see App not onboarded
+2. Service has the scope defined
+3. Access token is setup to include the right scopes
+Unauthorized Offline Ticket
+GW log fields
+1. message='Unauthorized Offline Ticket'
+2. reason='offlineTicket'
+3. req=[request path]
+4. offTkt=true
+What to check
+1. Offline user has no access to offline API
+2. If this is a system user (app specific offline user/ticket), make sure the App is onboarded to the offline API
+    1. And Check to make sure request URI req=[request path] matches exactly the Grant (type: iam) rule (in service Yaml)
+    2. The Rule of the grant (in this case offline API) can also be found in the Application Resource Page
+        1. Click on Downstream Services
+        2. Find and select the Service the App is calling
+        3. Select the Environment
+        4. See the Offline API(s) defined
+        5. Find the one that applies to the request the App is making
+            1. Needs to match exactly ... Verb and Path e.g. :
+                * rule: GET /v2/experiment
+                * In Gateway logs
+                    * method=GET
+                    * req=/v2/experiment
+3. For possible solutions, please refer to Common Offline Processing Errors. Typically, the errors result from the app not being onboarded to the service's offline API, the offline ticket is expired, or the offline ticket was created with an incorrect audience (client asset ID).
+Forbidden by service
+GW log fields
+1. phrase=Forbidden (in some cases this field not present)
+2. gw_gen=F
+What to check
+1. Service returned 403 status, does not allow access
+404 Not found

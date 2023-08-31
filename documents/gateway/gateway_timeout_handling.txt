@@ -1,0 +1,7 @@
+Timeouts
+How does the Gateway handle timeouts?
+The Gateway implements a configurable timeout when making a request to the downstream/backend service. By default, this timeout is 5 seconds. If the http response from the backend is not recieved to Gateway before the timeout, then the Gateway returns an HTTP 504 error.
+
+Note
+The "Timeout" setting under "Target" in MyGateway UI sets the socketTimeout in the yaml configuration. API Gateway sets the request timeout (Jetty Timeout) twice the socketTimeout.
+For example: if the "Timeout" is set to 1000ms, Gateway sets the request timeout as 2000ms. As a result, the svcTime could be greater than the socketTimeout defined under "Target" settings and so, the allowed the request would take longer than the socketTimeout.

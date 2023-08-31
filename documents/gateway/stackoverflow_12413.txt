@@ -1,0 +1,42 @@
+Question: We are seeing a spike in 504 errors with our service. Is there a problem with the API Gateway, or our service?
+
+I saw a spike in API Gateway timeout errors (status 504 and gw_gen=T) for my service in the Prod environment. Can someone take a look? Please see below for a sample log:
+
+2020-02-21 15:35:33,771 -0800  [Thread-78] LogPublisherImpl level=WARN
+txId=06c70000-685a-4880-beea-0d4862b32f2c, izone=enterprise, env=prd,
+rev=18, app=Intuit.platform.fdptools.fdpsupportclient, appType=web,
+authType=intuitPrivatePlusUser, credentialId=4108426352365155808,
+authTime=0, userContext=eyJraWQi, albRedirect=F, method=POST,
+xHost=financialdataadministration.api.intuit.com, port=18389,
+api=Intuit.platform.aggregation.financialdataadministration,
+req=/v1/users/123145855828374/entities, corsActive=false,
+requestContentType=application/json, requestSize=515,
+outboundHostname=fdp-aggregation-prd-fda.ifdp-prod-pci-
+usw2.iks.a.intuit.com, status=504,
+phrase=Code:GatewayTimeout,Type:SYSTEM, gw_gen=T, portlessRouting=F,
+gwTime=5, svcTime=30017, txTime=30022, xFor=34.212.57.212,
+routeInboundURI=/v1/*, routingType=serviceDial, swimlane=IKS-IHP
+Group/Blue-US-West2, CEH=F, CLIENT_AAL=15, TP=F,
+expDateMillis=1561359600000, grntAAL=null, grntAALTyp=null,
+gwErrorType=S, httpResponseCode=504, iamProduct=0,
+lastMileSigning=generated, lmSigningTime=1, offlineTicket=1,
+outboundCipher=Non deterministic, partitionId=05b2ac1d-557f-459d-b82d-
+abe9735843f7, partitionName=sw9, privateAuthPlusTime=0,
+reqFiltered=/v1/users/*/entities, requestPayloadTransferTime=7,
+skipAccountMergeFlow=true,
+svcError=java.util.concurrent.TimeoutException Idle timeout 30000 ms,
+throttleTime=1, uniqueId=gw-58578040-0de7-4fed-ac4f-0901fc6ac9e0, user-
+agent=Java/1.8.0_152
+
+Answer:
+
+The main field to look at in the logs since this is a gateway generated error is gwErrorType. Based on the log you provided above, gwErrorType=S, which means this is a server generated error (https://github.intuit.com/pages/services-gateway/gateway-docs/Logs/).
+
+Since we know this is a server-side error, we recommend you to investigate your service's logs at the load balancer and web tiers specifically for the outboundHostname (backend host) fdp-aggregation-prd-fda.ifdp-prod-pci-usw2.iks.a.intuit.com. That way you can understand why the service is failing to respond to the Gateway within the configured timeout.
+
+If you need to find out the configured timeout for a service's backend host, please refer to the active YAML config in Dev Portal under the targets section then. socketTimeout: https://devportal.intuit.com/app/dp/resource/3461033905824747055/mygateway?hosting=aws&env=prd&state=active&tab=ui
+
+If you need to modify your timeout for any reason, you can do so in the YAML by starting a workflow, have a service admin approve then go live for the changes to be reflected.
+
+Any timeout issues where the logs say gwErrorType=G or. U, please reach out to the Gateway Support Slack Channel.
+

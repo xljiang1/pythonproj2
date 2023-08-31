@@ -1,0 +1,15 @@
+###### Requirements without Version Specifiers ######
+--extra-index-url https://artifact.intuit.com/artifactory/api/pypi/pypi-intuit/simple/
+requests
+pyyaml
+uuid
+GitPython
+PyGithub
+boto3
+nocode-execution.genstudiopy.genstudiopy==0.10.4 --extra-index-url https://artifact.intuit.com/artifactory/api/pypi/pypi-intuit/simple/
+pydantic
+numpy
+langchain
+tiktoken
+openai
+chromadb

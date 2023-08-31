@@ -1,0 +1,113 @@
+1.  Response Flag - DC
+    Response message - Upstream Connection Failure
+    What it means for source event - The source proxy failed to establish a connection with the upstream
+    What it means for destination event - The destination proxy is unreachable or not accepting connections
+    Description - The source proxy couldn't establish a connection with the destination, possibly due to network issues.
+2.  Response Flag - UH
+    Response message - No Healthy Upstream
+    What it means for source event - No healthy upstream instances were found for routing the request
+    What it means for destination event - N/A
+    Description - The source proxy couldn't find a healthy destination instance to route the request to.
+3.  Response Flag - UF
+Response message - Upstream Connection Termination
+What it means for source event - The source proxy lost connection with the upstream during data transfer
+What it means for destination event - The destination proxy closed the connection during data transfer
+Description - The connection between source and destination proxies was terminated, possibly due to issues at destination.
+4. Response Flag - URX
+Response message - Upstream Remote Reset
+What it means for source event - The source proxy received a reset from the upstream
+What it means for destination event - The destination proxy sent a reset to the source proxy
+Description - There was a connection reset on the destination service. Look for signs such as pod restarts or application crashes on the destination.
+5. Response Flag - UC
+Response message - Upstream Request Timeout
+What it means for source event -The source proxy did not receive a response from the upstream within the allotted time
+What it means for destination event - The destination proxy did not respond in time
+Description - The destination proxy took too long to respond, causing the source proxy to time out.
+6. Response Flag - NR
+Response message - No Route
+What it means for source event - The source proxy couldn't find a valid route for the request
+What it means for destination event - N/A
+Description - The source proxy couldn't determine where to route the request, possibly due to a misconfiguration.
+7. Response Flag - LH
+Response message - Local Reset
+What it means for source event -The source proxy reset the connection locally
+What it means for destination event - N/A
+Description - The source proxy reset the connection, possibly due to issues with the request or local connection.
+8. Response Flag - UT
+Response message - Upstream Request Time-out
+What it means for source event - The source proxy exceeded the allotted time to process the request
+What it means for destination event - N/A
+Description - The source proxy took too long to process the request and aborted the operation.
+9. Response Flag - LR
+Response message - Local Response
+What it means for source event - The source proxy generated a local response without forwarding the request to the destination
+What it means for destination event - N/A
+Description - The source proxy generated a response without involving the destination, possibly due to an error or a short-circuit.
+10. Response Flag - FI
+Response message - Failed to Initialize Connection
+What it means for source event - The source proxy failed to initialize a connection to the upstream
+What it means for destination event - The destination proxy failed to accept the connection
+Description - The connection couldn't be initialized between the source and destination proxies, possibly due to misconfiguration.
+11. Response Flag - UI
+Response message - Upstream Connection Overflow
+What it means for source event - The source proxy reached its maximum number of allowed upstream connections
+What it means for destination event - N/A
+Description - The source proxy couldn't open a new connection to the destination, as it reached the maximum allowed connections.
+12. Response Flag - UO
+Response message - Upstream Overflow
+What it means for source event - The source proxy reached its maximum number of allowed pending requests to the upstream
+What it means for destination event - N/A
+Description - The source proxy couldn't process the request, as it reached the maximum allowed pending requests to the destination.
+13. Response Flag - DPE
+Response message - Downstream Protocol Error
+What it means for source event - The source proxy encountered a protocol error while processing the downstream request
+What it means for destination event - N/A
+Description - The source proxy encountered a protocol error in the received request, such as malformed headers or unsupported features.
+14. Response Flag - UPE
+Response message - Upstream Protocol Error
+What it means for source event - The source proxy encountered a protocol error while processing the upstream response
+What it means for destination event - The destination proxy sent a malformed response
+Description - The source proxy encountered a protocol error in the response from the destination, such as malformed headers or unsupported features.
+
+
+15. Response Flag - SI
+Response message - Stream Idle Timeout
+What it means for source event - The source proxy terminated a connection that was idle for too long
+What it means for destination event - The destination proxy didn't send data within the idle timeout period
+Description - The connection between the source and destination proxies was closed due to inactivity exceeding the idle timeout.
+16. Response Flag - DI
+Response message - Downstream Idle Timeout
+What it means for source event - The source proxy terminated a connection due to a lack of downstream activity
+What it means for destination event - N/A
+Description - The source proxy closed the connection as it didn't receive any data from the downstream within the idle timeout period.
+17. Response Flag - UI
+Response message - Upstream Idle Timeout
+What it means for source event - The source proxy terminated a connection due to a lack of upstream activity
+What it means for destination event - N/A
+Description - The source proxy closed the connection as it didn't receive any data from the destination within the idle timeout period.
+18. Response Flag - RX
+Response message - Remote Reset
+What it means for source event - The source proxy received a connection reset from the downstream
+What it means for destination event - N/A
+Description - The downstream sent a reset to the source proxy, indicating it wants to close the connection.
+19. Response Flag - RU
+Response message - Upstream Per Try Timeout
+What it means for source event - The source proxy exceeded the per-try timeout for the upstream request
+What it means for destination event - N/A
+Description - The source proxy took too long to process the request on a specific attempt, causing a retry or request failure.
+20. Response Flag - RL
+Response message - Ratelimited
+What it means for source event - The source proxy rejected the request because it exceeded the rate limit
+What it means for destination event - N/A
+Description - The source proxy denied the request due to exceeding the configured rate limit for the service or client.
+21. Response Flag - IA
+Response message - Ingress Aware
+What it means for source event - The source proxy is aware of ingress traffic but did not process the request
+What it means for destination event - N/A
+Description - The source proxy identified the request as ingress traffic but didn't process it, possibly due to an intentional bypass or error.
+22. Response Flag - E
+Response message - Error
+What it means for source event - The source proxy encountered an error while processing the request
+What it means for destination event - The destination proxy encountered an error while processing the request
+Description - An error occurred during request processing, possibly due to misconfiguration, resource constraints, or application issues.
+
